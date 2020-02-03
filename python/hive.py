@@ -14,11 +14,11 @@ class Drone(DroneAgent):
 
 class MyHivemind(Hivemind):
 
-    def initialize_hive(self):
-        self.logger.info('SUCCESS')
+    def initialize_hive(self, packet: GameTickPacket) -> None:
+        self.logger.info('Hello there!')
         pass
 
     def get_outputs(self, packet: GameTickPacket) -> Dict[int, PlayerInput]:
-        if packet.game_info.seconds_elapsed < 10.0:
-            self.logger.info('RUNNING!')
+        if packet.game_info.seconds_elapsed < 3.0:
+            self.logger.info('Spamming for the first three seconds!')
         return {index: PlayerInput() for index in self.drone_indices}

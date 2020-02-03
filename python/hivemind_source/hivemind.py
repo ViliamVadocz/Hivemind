@@ -79,9 +79,10 @@ class Hivemind(BotHelperProcess):
 
         # Create packet object.
         packet = GameTickPacket()
+        self.game_interface.update_live_data_packet(packet)
         
         # Initialization step for your hivemind.
-        self.initialize_hive()
+        self.initialize_hive(packet)
 
         while True:
             previous_packet_time = packet.game_info.seconds_elapsed
@@ -106,7 +107,7 @@ class Hivemind(BotHelperProcess):
 
     # Override these methods:
 
-    def initialize_hive(self):
+    def initialize_hive(self, packet: GameTickPacket) -> None:
         """
         Override this method if you want to have an initialization step for your hivemind.
         """
