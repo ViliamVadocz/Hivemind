@@ -38,8 +38,8 @@ class DroneAgent(BaseIndependentAgent):
 
     def load_config(self, config_header: ConfigHeader):
         self.hivemind_path = config_header.getpath(HIVE_PATH_KEY)
-        self.hivemind_name = config_header.getpath(HIVE_NAME_KEY)
-        self.hivemind_key = config_header.getpath(HIVE_KEY_KEY)
+        self.hivemind_name = config_header.get(HIVE_NAME_KEY)
+        self.hivemind_key = config_header.get(HIVE_KEY_KEY)
 
     @staticmethod
     def create_agent_configurations(config: ConfigObject):
