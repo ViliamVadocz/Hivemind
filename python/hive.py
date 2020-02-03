@@ -5,7 +5,12 @@ from rlbot.utils.structures.game_data_struct import GameTickPacket
 
 # I am hoping I can add this to rlbot
 # or maybe make it a separate package like rlbot_hive.
+from hivemind_source.drone_agent import DroneAgent
 from hivemind_source.hivemind import Hivemind
+
+# Dummy agent.
+class Drone(DroneAgent):
+    pass
 
 class MyHivemind(Hivemind):
 
