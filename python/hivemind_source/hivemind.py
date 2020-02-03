@@ -101,6 +101,9 @@ class Hivemind(BotHelperProcess):
 
             # Send the drone inputs to the drones.
             for index in outputs:
+                if index not in self.drone_indices:
+                    self.logger.error('Tried to send output to bot index not in drone_indices.')
+                    continue
                 output = outputs[index]
                 self.game_interface.update_player_input(
                     output, index)
