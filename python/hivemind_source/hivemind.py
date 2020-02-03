@@ -99,6 +99,12 @@ class Hivemind(BotHelperProcess):
             # Outputs are expected to be a Dict[int, PlayerInput]
             outputs = self.get_outputs(packet)
 
+            if len(outputs) < len(self.drone_indices):
+                self.logger.error('Not enough outputs were given.')
+            
+            elif len(outputs) > len(self.drone_indices):
+                self.logger.error('Too many outputs were given.')
+                
             # Send the drone inputs to the drones.
             for index in outputs:
                 if index not in self.drone_indices:
