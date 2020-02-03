@@ -16,9 +16,11 @@ class MyHivemind(Hivemind):
 
     def initialize_hive(self, packet: GameTickPacket) -> None:
         self.logger.info('Hello there!')
+        self.test = True
         pass
 
     def get_outputs(self, packet: GameTickPacket) -> Dict[int, PlayerInput]:
-        if packet.game_info.seconds_elapsed < 3.0:
-            self.logger.info('Spamming for the first three seconds!')
+        if self.test:
+            self.logger.info('I am alive!')
+            self.test = False
         return {index: PlayerInput() for index in self.drone_indices}
