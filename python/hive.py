@@ -17,7 +17,6 @@ class MyHivemind(Hivemind):
     def initialize_hive(self, packet: GameTickPacket) -> None:
         self.logger.info('Hello there!')
         self.test = True
-        pass
 
     def get_outputs(self, packet: GameTickPacket) -> Dict[int, PlayerInput]:
         if self.test:
