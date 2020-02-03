@@ -15,7 +15,7 @@ To get started with your own hivemind in Python you will need these four things:
 
 The bot configuration file must have the file ending `.cfg` and look something like this (for me this is the `config.cfg`):
 
-```toml
+```
 [Locations]
 # Path to loadout config. Can use relative path from here.
 looks_config = ./appearance.cfg
