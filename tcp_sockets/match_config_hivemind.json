@@ -1,0 +1,9 @@
+[{
+  "type": "MatchConfig",
+  "map": "Mannfield",
+  "mode": "soccar",
+  "match_length": "Unlimited", 
+  "num_players": 1,
+  "num_cars": 4,
+  "start_when": "all bots ready"
+}]

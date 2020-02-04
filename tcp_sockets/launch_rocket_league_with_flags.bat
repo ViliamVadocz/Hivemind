@@ -1,0 +1,1 @@
+"C:\Program Files (x86)\Steam\Steam.exe" -applaunch 252950 -rlbot RLBot_ControllerURL=127.0.0.1:23233 PacketSendRate=120 -nomovie
