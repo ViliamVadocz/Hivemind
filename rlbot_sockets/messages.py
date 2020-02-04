@@ -8,7 +8,6 @@ import struct
 
 ### Functions for handling messages ###
 
-
 def create_header(encoded_message):
     length = len(encoded_message)
     header = struct.pack("H", length)
@@ -26,6 +25,20 @@ def send_message(message, socket):
     # Send message.
     socket.sendall(byte_message)
 
+# FIXME
+def receive_message_pessimistic(socket):
+    received = socket.recv(1024)
+    # Get header.
+    header = received[:2]
+    encoded_message = received[2:]
+    # Unpack returns tuple and we want the value inside.
+    length = struct.unpack("H", header)[0]
+    # Receive rest of message.
+    while len(encoded_message) < length:
+        encoded_message += socket.recv(1024)
+    # Convert from JSON.
+    return json.loads(encoded_message, encoding="utf-8")
+
 
 def receive_message(socket):
     # Get header.
@@ -38,7 +51,6 @@ def receive_message(socket):
     return json.loads(encoded_message, encoding="utf-8")
 
 ### From RLBot ###
-
 
 INIT_MESSAGE = {
     "type": "Initialize",
