@@ -6,6 +6,8 @@ import json
 import socket
 import struct
 
+ENCODING = "ascii"
+
 ### Functions for handling messages ###
 
 def create_header(encoded_message):
@@ -14,9 +16,15 @@ def create_header(encoded_message):
     return header
 
 
-def send_message(message, socket):
-    # Encode to UTF-8 byte string.
-    encoded_message = json.dumps(message).encode("utf-8")
+def send_packet(socket, *args):
+    # If there is only one argument and it is a list or tuple, use it as packet.
+    if len(args) == 1 and (isinstance(args[0], list) or isinstance(args[0], tuple)):
+        messages = args[0]
+    # Otherwise treat each argument as message and send them as packet.
+    else:
+        messages = args
+    # Encode to byte string.
+    encoded_message = json.dumps(messages).encode(ENCODING)
     byte_message = bytes(encoded_message)
     # Create header (contains length of message)
     header = create_header(encoded_message)
@@ -25,30 +33,31 @@ def send_message(message, socket):
     # Send message.
     socket.sendall(byte_message)
 
-# FIXME
-def receive_message_pessimistic(socket):
+# XXX I have not tested this.
+def receive_packet_pessimistic(socket):
     received = socket.recv(1024)
     # Get header.
     header = received[:2]
-    encoded_message = received[2:]
+    encoded_packet = received[2:]
     # Unpack returns tuple and we want the value inside.
     length = struct.unpack("H", header)[0]
     # Receive rest of message.
-    while len(encoded_message) < length:
-        encoded_message += socket.recv(1024)
+    while len(encoded_packet) < length:
+        what_is_left = length - len(encoded_packet)
+        encoded_packet += socket.recv(min(what_is_left, 1024))
     # Convert from JSON.
-    return json.loads(encoded_message, encoding="utf-8")
+    return json.loads(encoded_packet, encoding=ENCODING)
 
 
-def receive_message(socket):
+def receive_packet(socket):
     # Get header.
     received_header = socket.recv(2)
     # Unpack returns tuple and we want the value inside.
     length = struct.unpack("H", received_header)[0]
     # Receive rest of message.
-    encoded_message = socket.recv(length)
+    encoded_packet = socket.recv(length)
     # Convert from JSON.
-    return json.loads(encoded_message, encoding="utf-8")
+    return json.loads(encoded_packet, encoding=ENCODING)
 
 ### From RLBot ###
 
@@ -131,7 +140,7 @@ INIT_MESSAGE = {
 }
 
 
-PACKET_MESSAGE = {
+UPDATE_MESSAGE = {
     "type": "Update",
     "frame": 193,
     "time_left": 91,
@@ -216,11 +225,11 @@ READY_MESSAGE = {
 
 INPUT_MESSAGE = {
     "type": "PlayerInput",
-    "steer": 0.53,
-    "throttle": 0.2,
-    "roll": 0.8,
-    "pitch": 0.1,
-    "yaw": -0.3,
+    "steer": 1.0,
+    "throttle": 1.0,
+    "roll": 0.0,
+    "pitch": 0.0,
+    "yaw": 0.0,
     "jump": 0,
     "boost": 0,
     "use_item": 0,
