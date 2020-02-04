@@ -2,11 +2,16 @@ import socket
 
 from messages import send_packet, receive_packet, INIT_MESSAGE, UPDATE_MESSAGE
 
-
 class Server:
 
-    def __init__(self, port):
-        print("[SERVER] Loaded")
+    def log(self, statement):
+        if self.debug:
+            print(f"[SERVER] {statement}")
+
+    def __init__(self, port, debug=False):
+        self.debug = debug
+        self.log("Loaded")
+
         # Create socket.
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.bind(("localhost", port))
@@ -16,9 +21,9 @@ class Server:
         # FIXME Might not work for >1.
         for _ in range(num_connections):
             self.socket.listen(1)
-            print("[SERVER] Awaiting connection")
+            self.log("Awaiting connection")
             client, address = self.socket.accept()
-            print(f"[SERVER] Client connected from {address}")
+            self.log(f"Client connected from {address}")
 
             # Sends init message.
             send_packet(client, INIT_MESSAGE) 
@@ -31,15 +36,15 @@ class Server:
             # Packet loop.
             while True:
                 for client in self.clients:
-                    print("[SERVER] Sending UPDATE message")
+                    self.log("Sending UPDATE message")
                     send_packet(client, UPDATE_MESSAGE)
-                    print("[SERVER] Receiving packet")
+                    self.log("Receiving packet")
                     message = receive_packet(client)
                     self.parse_packet(message)
 
         except Exception as e:
             print(e)
-            print("[SERVER] Closing")
+            self.log("Closing")
             self.socket.close()
 
     def parse_packet(self, message):
@@ -48,6 +53,6 @@ class Server:
 
 
 if __name__ == "__main__":
-    test_server = Server(23234)
+    test_server = Server(23234, debug=True)
     test_server.listen_for_connections(1)
     test_server.run()
