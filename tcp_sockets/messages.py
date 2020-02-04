@@ -8,7 +8,7 @@ import struct
 
 ENCODING = "ascii"
 
-### Functions for handling messages ###
+### PACKET HANDLING FUNCTIONS ###
 
 def create_header(encoded_message):
     length = len(encoded_message)
@@ -59,6 +59,7 @@ def receive_packet(socket):
     # Convert from JSON.
     return json.loads(encoded_packet, encoding=ENCODING)
 
+### EXAMPLE MESSAGES ###
 ### From RLBot ###
 
 INIT_MESSAGE = {
