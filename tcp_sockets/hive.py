@@ -25,6 +25,9 @@ class SocketHivemind:
 
     def __init__(self, port, debug=False):
         self.debug = debug
+        self.id = ID
+        self.drone_ids = [ID + i for i in range(NUM_BOTS)]
+        self.initialize_hive()
         self.log("Loaded")
 
         # Create socket.
@@ -32,9 +35,7 @@ class SocketHivemind:
         self.log("Attempting to connect")
         self.socket.connect(("localhost", port))
         self.log("Connected")
-
-        self.id = ID
-        self.drone_indices = [ID + i for i in range(NUM_BOTS)]
+        
         self.log("Sending READY message")
         send_packet(self.socket, HIVE_READY_MESSAGE)
 
@@ -65,8 +66,12 @@ class SocketHivemind:
                 # TODO Other kinds of messages
                 continue
 
+    def initialize_hive(self):
+        # Space for an init func.
+        pass
+
     def get_output(self, message):
-        controls = [INPUT_MESSAGE for drone in self.drone_indices]  
+        controls = [INPUT_MESSAGE for drone in self.drone_ids]  
         return controls
 
 if __name__ == "__main__":
