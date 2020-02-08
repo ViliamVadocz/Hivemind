@@ -61,10 +61,10 @@ class Hivemind(BotHelperProcess):
         self.logger.info("Finished sleeping. Ready to go!")
 
         # Runs the game loop where the hivemind will spend the rest of its time.
-        self._game_loop()
+        self.__game_loop()
 
 
-    def _game_loop(self):
+    def __game_loop(self):
         """
         The bot hivemind will stay in this loop for the whole game. 
         This is where the initialize_hive and get_outputs functions are called.
