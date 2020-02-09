@@ -3,13 +3,15 @@ from typing import Dict
 from rlbot.utils.structures.bot_input_struct import PlayerInput
 from rlbot.utils.structures.game_data_struct import GameTickPacket
 
-# I am hoping I can add this to rlbot
-# or maybe make it a separate package like rlbot_hive.
+# Temporary workaround.
+# Adding src/ directory to PYTHONPATH.
 import sys
-sys.path.append("..\..\..\Hivemind")
+from pathlib import Path
+path_to_src_python = Path(__file__).parent.parent.parent / 'src' / 'python'
+sys.path.append(str(path_to_src_python))
 
-from Hivemind.hivemind_source.drone_agent import DroneAgent
-from Hivemind.hivemind_source.hivemind import Hivemind
+from drone_agent import DroneAgent
+from hivemind import Hivemind
 
 # Dummy agent.
 class Drone(DroneAgent):
