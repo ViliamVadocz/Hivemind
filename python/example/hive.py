@@ -7,7 +7,7 @@ from rlbot.utils.structures.game_data_struct import GameTickPacket
 # Adding src/ directory to PYTHONPATH.
 import sys
 from pathlib import Path
-path_to_src_python = Path(__file__).parent.parent.parent / 'src' / 'python'
+path_to_src_python = Path(__file__).parent.parent / 'src'
 sys.path.append(str(path_to_src_python))
 
 from drone_agent import DroneAgent
