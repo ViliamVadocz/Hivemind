@@ -1,5 +1,5 @@
 [package]
-name = "rust"
+name = "rlbot_hive"
 version = "0.1.0"
 authors = ["Viliam Vadocz <viliam.vadocz@gmail.com>"]
 edition = "2018"
