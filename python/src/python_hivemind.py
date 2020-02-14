@@ -13,7 +13,7 @@ from rlbot.utils.structures.bot_input_struct import PlayerInput
 from rlbot.utils.structures.game_data_struct import GameTickPacket, FieldInfoPacket
 from rlbot.utils.structures.game_interface import GameInterface
 
-class Hivemind(BotHelperProcess):
+class PythonHivemind(BotHelperProcess):
 
     # Terminology:
     # hivemind - main process controlling the drones.
@@ -39,7 +39,7 @@ class Hivemind(BotHelperProcess):
         """Adds all drones with the correct key to our set of running indices."""
         while not self.metadata_queue.empty():
             # Tries to get the next agent from the queue.
-            single_agent_metadata: AgentMetadata = self.metadata_queue.get(timeout=0.1)
+            single_agent_metadata: AgentMetadata = self.metadata_queue.get(timeout=1.0)
             # Adds the index to the drone_indices.
             self.drone_indices.add(single_agent_metadata.index)
 
@@ -53,12 +53,10 @@ class Hivemind(BotHelperProcess):
         # Loads game interface.
         self.game_interface.load_interface()
 
-        # Wait a moment for all agents to have a chance to start up and send metadata.
-        # Increase the time if you're having issues with drones missing from the hivemind.
-        self.logger.info("Snoozing for 3 seconds; give me a moment.")
-        time.sleep(3)
+        # Collect drone indices that requested a helper process with our key.
+        self.logger.info("Collecting drones; give me a moment.")
         self.try_receive_agent_metadata()
-        self.logger.info("Finished sleeping. Ready to go!")
+        self.logger.info("Ready to go!")
 
         # Runs the game loop where the hivemind will spend the rest of its time.
         self.__game_loop()
@@ -92,7 +90,7 @@ class Hivemind(BotHelperProcess):
 
             # Checking if packet is old. If yes, sleep and skip running the code.
             if previous_packet_time == packet.game_info.seconds_elapsed:
-                time.sleep(0.001)
+                time.sleep(0.003)
                 continue
             
             # Get outputs from hivemind for each bot.

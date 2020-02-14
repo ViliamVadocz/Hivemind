@@ -4,6 +4,8 @@ Hivemind bots for [RLBot](rlbot.org).
 
 ## Python
 
+NEEDS TO BE UPDATED
+
 To get started with your own hivemind in Python you will need these four things:
 
 - a bot configuration file
