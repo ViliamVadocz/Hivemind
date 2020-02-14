@@ -1,0 +1,30 @@
+language: rust
+
+cache: cargo
+
+rust:
+  - stable
+  - nightly
+
+env:
+  - FEATURES='--no-default-features --features strict'
+  - FEATURES='--features strict'
+
+before_script:
+  - rustup component add clippy
+
+script:
+  - cargo clippy --all-targets $FEATURES
+  - cargo test $FEATURES
+
+matrix:
+  allow_failures:
+    - rust: nightly
+  include:
+    - rust: nightly
+      env: {}
+      before_script:
+        - rustup component add rustfmt-preview
+      script:
+        - cargo fmt -- --check
+        - cargo rustdoc --all-features -- --deny warnings

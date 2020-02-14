@@ -1,0 +1,32 @@
+[package]
+name = "rlbot"
+version = "0.6.0"
+edition = "2018"
+authors = ["John Simon <john@whatisaph.one>"]
+description = "RLBot bindings for Rust"
+documentation = "https://docs.rs/rlbot/"
+repository = "https://github.com/whatisaphone/rlbot-rust"
+readme = "README-crates-io.md"
+keywords = ["rlbot", "rocket-league", "game"]
+license = "MIT"
+
+[badges]
+travis-ci = { repository = "whatisaphone/rlbot-rust" }
+
+[dependencies]
+libloading = "0.5.0"
+ratelimit = "0.4.3"
+flatbuffers = "0.5.0"
+na = { version = "0.18.0", package = "nalgebra", optional = true }
+smallvec = "0.6.9"
+
+[dev-dependencies]
+na = { version = "0.18.0", package = "nalgebra" }
+rand = "0.6.1"
+winapi = { version = "0.3.5", features = ["synchapi"] }
+winproc = "0.6.2"
+
+[features]
+default = ["nalgebra"]
+nalgebra = ["na"]
+strict = []
