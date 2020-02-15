@@ -18,7 +18,7 @@ To get started with your own hivemind in Python you will need these four things:
 
 The bot configuration file must have the file ending `.cfg` and look something like this (see `config.cfg` in the examples):
 
-```
+```toml
 [Locations]
 # Path to loadout config. Can use relative path from here.
 looks_config = ./appearance.cfg
@@ -81,6 +81,7 @@ The `initialize_hive` method is for any code that you want to run before any `ge
 Normally, a `BotHelperProcess` would have to use `GameInterface` methods to access things like ball prediction or rendering. These methods have been wrapped similar to normal Python bot methods.
 
 Without wrapper:
+
 ```python
 # In initialization:
 self.ball_prediction = BallPrediction()
@@ -89,17 +90,18 @@ self.game_interface.update_ball_prediction(self.ball_prediction)
 ```
 
 With wrapper:
+
 ```python
 self.ball_prediction = self.get_ball_prediction_struct
 ```
 
 ## Rust
 
-**TODO**
+TODO
 
 ## Other Languages
 
-**TODO**
+TODO
 
 ## Help
 
