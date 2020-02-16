@@ -10,6 +10,8 @@ Currently supported languages:
 - Python
 - Rust
 
+**Disclaimer:** You will need to use a copy of the python and rust frameworks from this repo, because they have code that is not yet a part of rlbot. Examine the examples for relevant setup (such as using a local rlbot package in rust).
+
 ***
 
 ## Python
