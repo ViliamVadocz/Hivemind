@@ -5,6 +5,13 @@ Hivemind bots for [RLBot](rlbot.org).
 This repo is for experimentation and examples.
 A proper pull request to the framework will be made once everything is working as intended.
 
+Currently supported languages:
+
+- Python
+- Rust
+
+***
+
 ## Python
 
 To get started with your own hivemind in Python you will need these four things:
@@ -12,9 +19,9 @@ To get started with your own hivemind in Python you will need these four things:
 - a bot configuration file
 - an appearance configuration file
 - a dummy `DroneAgent`
-- a `Hivemind` (subclass of `BotHelperProcess`)
+- a `PythonHivemind` (subclass of `BotHelperProcess`)
 
-### Bot configuration file
+### Bot Configuration File
 
 The bot configuration file must have the file ending `.cfg` and look something like this (see `config.cfg` in the examples):
 
@@ -95,13 +102,125 @@ With wrapper:
 self.ball_prediction = self.get_ball_prediction_struct
 ```
 
+***
+
 ## Rust
 
-TODO
+You will need:
+
+- a bot configuration file
+- an appearance configuration file
+- a dummy `DroneAgent`
+- a `SubprocessHivemind` (subclass of `BotHelperProcess`)
+- an executable to control the hivemind.
+
+### Bot Configuration File
+
+The bot configuration file must have the file ending `.cfg` and look something like this (see `config.cfg` in the examples):
+
+```toml
+[Locations]
+# Path to loadout config. Can use relative path from here.
+looks_config = ./appearance.cfg
+
+# Path to python file. Can use relative path from here.
+python_file = ./hive.py
+
+# Name of the bot in-game
+name = Drone
+```
+
+Note that unlike when running a normal Rust bot, you do not specify the path to the executable in the config file.
+
+### Appearance configuration file
+
+The appearance file is just a normal appearance file. See [the rlbot wiki](https://github.com/RLBot/RLBot/wiki/Bot-Customization) for more info.
+
+### Dummy Drone Agent
+
+RLBot needs an agent to request the hivemind (subclass of `BotHelperRequest`). This is done using a `BaseIndependentAgent`. I abstracted away all the hassle of making a request with `DroneAgent`. All you need now is just to subclass it like this:
+
+```python
+class Drone(DroneAgent):
+    # Relative path to the hivemind file.
+    hive_path = './some/relative/path.py'
+    # Bots with the same key will be part of the same hivemind.
+    hive_key = 'my_unique_hivemind_key'
+    # Name of your hivemind that shows up in the console.
+    hive_name = 'Terrible Name'
+```
+
+- `hive_path` points towards the main hivemind file containing a `SubprocessHivemind` subclass. This can be the same file that the `DroneAgent` is in, in which case you can just point to `__file__`.
+- `hive_key` matches up agents with the same key into one hivemind. Your key should be unique so that when two hiveminds meet there is no confusion over which bot is whose.
+- `hive_name` determines the name that shows up in the console when you use the `self.logger`. ![image](console.png)
+
+### The Hivemind
+
+The `SubprocessHivemind` is a subclass of `BotHelperProcess`. When the drones request a hivemind, a process is created with the unique key if one doesn't already exist with that key. Once it collects all the indices, it launches your executable with the drone indices as arguments.
+
+You need to specify the path to the executable by setting `exec_path`.
+
+TODO: Make relatives path work
+
+```python
+class MyOwnRustHivemind(SubprocessHivemind):
+    # Path to the executable.
+    exec_path = str(
+        Path(__file__).parent.parent / 'target' / 'debug' / 'example.exe')
+```
+
+### The Executable
+
+If you have made a Rust bot before, the framework is very similar:
+
+```rust
+use std::error::Error;
+
+fn main() -> Result<(), Box<dyn Error>> {
+    rlbot::run_hive(MyHivemind { drone_indices: vec![] })
+}
+
+struct MyHivemind {
+    drone_indices: Vec<usize>
+}
+
+impl rlbot::Hivemind for MyHivemind {
+    fn set_drone_indices(&mut self, indices: Vec<usize>) {
+        self.drone_indices = indices;
+    }
+
+    fn tick(&mut self, packet: &rlbot::GameTickPacket) -> Vec<rlbot::ControllerState> {
+
+        let mut inputs: Vec<rlbot::ControllerState> = vec![];
+        for _index in self.drone_indices.iter() {
+            inputs.push(
+                rlbot::ControllerState {
+                    throttle: 1.0,
+                    ..Default::default()
+                }
+            );
+        }
+
+        inputs
+    }
+}
+```
+
+Important differences from the normal Rust bot framework:
+
+- `run_hive` instead of `run_bot`. It also expects a struct which implements the `Hivemind` trait.
+- instead of `set_player_index` there is `set_drone_indices` which gives you a `Vec<usize>`.
+- `tick` expects a return of `Vec<ControllerState>` instead of just one `ControllerState`. The first input will be sent to the first index in drone_indices, and so forth.
+
+Otherwise it is pretty much the same as a normal Rust bot.
+
+***
 
 ## Other Languages
 
 TODO
+
+***
 
 ## Help
 
