@@ -4,7 +4,7 @@ from rlbot.agents.base_independent_agent import BaseIndependentAgent
 from rlbot.botmanager.helper_process_request import HelperProcessRequest
 
 class DroneAgent(BaseIndependentAgent):
-    # Relative path to the hivemind file.
+    # Relative path to the hivemind helperprocess python file.
     hive_path = None
     # Bots with the same key will be part of the same hivemind.
     hive_key = None
@@ -27,11 +27,12 @@ class DroneAgent(BaseIndependentAgent):
         if os.path.isfile(self.hive_path):
             # Appends team to key so that each team has its own hivemind.
             key = f'{self.hive_key}{self.team}'
-
+            
             # Creates request for helper process.
             options = {
                 'name': self.hive_name
             }
+
             return HelperProcessRequest(self.hive_path, key, options=options)
 
         raise FileNotFoundError('Could not find file: {self.hive_path}')

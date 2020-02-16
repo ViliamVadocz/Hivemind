@@ -13,6 +13,7 @@ from rlbot.utils.structures.bot_input_struct import PlayerInput
 from rlbot.utils.structures.game_data_struct import GameTickPacket, FieldInfoPacket
 from rlbot.utils.structures.game_interface import GameInterface
 
+
 class PythonHivemind(BotHelperProcess):
 
     # Terminology:
@@ -26,6 +27,13 @@ class PythonHivemind(BotHelperProcess):
         # This is configured inside your config file under hivemind_name.
         self.logger = get_logger(options['name'])
 
+        # Give a warning if exec_path was given.
+        if 'exec_path' in options:
+            self.logger.warning(
+                """An exec_path was given, but this is a PythonHivemind, and so it is ignored.
+                Try subclassing SubprocessHivemind if you want to use an executable."""
+            )
+
         # The game interface is how you get access to things
         # like ball prediction, the game tick packet, or rendering.
         self.game_interface = GameInterface(self.logger)
@@ -33,7 +41,6 @@ class PythonHivemind(BotHelperProcess):
         # drone_indices is a set of bot indices
         # which requested this hivemind with the same key.
         self.drone_indices = set()
-
 
     def try_receive_agent_metadata(self):
         """Adds all drones with the correct key to our set of running indices."""
@@ -43,12 +50,11 @@ class PythonHivemind(BotHelperProcess):
             # Adds the index to the drone_indices.
             self.drone_indices.add(single_agent_metadata.index)
 
-
     def start(self):
         """Starts the BotHelperProcess - Hivemind."""
         # Prints an activation message into the console.
         # This lets you know that the process is up and running.
-        self.logger.info("Hello, world!")
+        self.logger.debug("Hello, world!")
 
         # Loads game interface.
         self.game_interface.load_interface()
@@ -60,7 +66,6 @@ class PythonHivemind(BotHelperProcess):
 
         # Runs the game loop where the hivemind will spend the rest of its time.
         self.__game_loop()
-
 
     def __game_loop(self):
         """
@@ -78,7 +83,7 @@ class PythonHivemind(BotHelperProcess):
         # Create packet object.
         packet = GameTickPacket()
         self.game_interface.update_live_data_packet(packet)
-        
+
         # Initialization step for your hivemind.
         self.initialize_hive(packet)
 
@@ -92,25 +97,24 @@ class PythonHivemind(BotHelperProcess):
             if previous_packet_time == packet.game_info.seconds_elapsed:
                 time.sleep(0.003)
                 continue
-            
+
             # Get outputs from hivemind for each bot.
             # Outputs are expected to be a Dict[int, PlayerInput]
             outputs = self.get_outputs(packet)
 
             if len(outputs) < len(self.drone_indices):
-                self.logger.error('Not enough outputs were given.')
-            
+                self.logger.error("Not enough outputs were given.")
+
             elif len(outputs) > len(self.drone_indices):
-                self.logger.error('Too many outputs were given.')
-                
+                self.logger.error("Too many outputs were given.")
+
             # Send the drone inputs to the drones.
             for index in outputs:
                 if index not in self.drone_indices:
-                    self.logger.error('Tried to send output to bot index not in drone_indices.')
+                    self.logger.error("Tried to send output to bot index not in drone_indices.")
                     continue
                 output = outputs[index]
-                self.game_interface.update_player_input(
-                    output, index)
+                self.game_interface.update_player_input(output, index)
 
     # Override these methods:
 
@@ -122,12 +126,12 @@ class PythonHivemind(BotHelperProcess):
 
     def get_outputs(self, packet: GameTickPacket) -> Dict[int, PlayerInput]:
         """Where all the logic of your hivemind gets its input and returns its outputs for each drone.
-        
+
         Use self.drone_indices to access the set of bot indices your hivemind controls.
-        
+
         Arguments:
             packet {GameTickPacket} -- see https://github.com/RLBot/RLBot/wiki/Input-and-Output-Data-(current)
-        
+
         Returns:
             Dict[int, PlayerInput] -- A dictionary with drone indices as keys and corresponding PlayerInputs as values.
         """

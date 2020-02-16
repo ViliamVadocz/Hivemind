@@ -1,9 +1,9 @@
 use std::error::Error;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    rlbot::run_bot(
-        MyBot {
-            player_index: 0,
+    rlbot::run_hive(
+        MyHivemind {
+            drone_indices: vec![],
             last_time: 0.0,
             delta_time: 0.0,
             timer: 0.0
@@ -11,19 +11,19 @@ fn main() -> Result<(), Box<dyn Error>> {
     )
 }
 
-struct MyBot {
-    player_index: usize,
+struct MyHivemind {
+    drone_indices: Vec<usize>,
     last_time: f32,
     delta_time: f32,
     timer: f32
 }
 
-impl rlbot::Bot for MyBot {
-    fn set_player_index(&mut self, index: usize) {
-        self.player_index = index;
+impl rlbot::Hivemind for MyHivemind {
+    fn set_drone_indices(&mut self, indices: Vec<usize>) {
+        self.drone_indices = indices;
     }
 
-    fn tick(&mut self, packet: &rlbot::GameTickPacket) -> rlbot::ControllerState {
+    fn tick(&mut self, packet: &rlbot::GameTickPacket) -> Vec<rlbot::ControllerState> {
         let game_time = packet.game_info.seconds_elapsed;
         self.delta_time = game_time - self.last_time;
         self.last_time = game_time;
@@ -34,18 +34,17 @@ impl rlbot::Bot for MyBot {
             self.timer = 0.0;
         }
 
-        rlbot::ControllerState {
-            throttle: 1.0,
-            steer: 1.0,
-            ..Default::default()
+        let mut inputs: Vec<rlbot::ControllerState> = vec![];
+        for _index in self.drone_indices.iter() {
+            inputs.push(
+                rlbot::ControllerState {
+                    throttle: 1.0,
+                    steer: 1.0,
+                    ..Default::default()
+                }
+            );
         }
-        // get_input(self.player_index, packet).unwrap_or_default()
+        
+        inputs
     }
-}
-
-fn get_input(player_index: usize, packet: &rlbot::GameTickPacket,) -> Option<rlbot::ControllerState> {
-    Some(rlbot::ControllerState {
-        throttle: 1.0,
-        ..Default::default()
-    })
 }
