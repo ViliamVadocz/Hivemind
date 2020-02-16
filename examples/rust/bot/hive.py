@@ -13,5 +13,5 @@ class Drone(DroneAgent):
 
 
 class RustHivemind(SubprocessHivemind):
-    # Relative path to the executable.
+    # Path to the executable.
     exec_path = str(Path(__file__).parent.parent / 'target' / 'debug' / 'example.exe')
