@@ -9,7 +9,7 @@ Currently supported languages:
 
 ## Quick test
 
-Clone this repository and run `runner.py`. It should run a Python Hivemind vs a Rust Hivemind. The bots will just spin in circles, but you should see `Running!` and `I am alive! Team: #` in the console.
+Clone this repository and run `runner.py`. It should run a match with a Python Hivemind versus a Rust Hivemind. The bots will just spin in circles, but you should see `Running!` and `I am alive! Team: #` in the console.
 
 ## Help
 
