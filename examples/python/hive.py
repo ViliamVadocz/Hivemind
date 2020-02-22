@@ -32,7 +32,7 @@ class MyHivemind(PythonHivemind):
         self.last_time = game_time
         self.timer += dt
 
-        # Proclaim aliveness three seconds.
+        # Proclaim aliveness every three seconds.
         if self.timer > 3.0:
             self.logger.info(f'I am alive! Team: {self.team}')
             self.timer = 0.0
