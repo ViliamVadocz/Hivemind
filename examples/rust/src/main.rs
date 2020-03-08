@@ -23,7 +23,7 @@ impl rlbot::Hivemind for MyHivemind {
         self.drone_indices = indices;
     }
 
-    fn tick(&mut self, packet: &rlbot::GameTickPacket) -> Vec<rlbot::ControllerState> {
+    fn tick(&mut self, packet: &rlbot::GameTickPacket) -> Vec<(usize, rlbot::ControllerState)> {
         let game_time = packet.game_info.seconds_elapsed;
         self.delta_time = game_time - self.last_time;
         self.last_time = game_time;
@@ -34,14 +34,17 @@ impl rlbot::Hivemind for MyHivemind {
             self.timer = 0.0;
         }
 
-        let mut inputs: Vec<rlbot::ControllerState> = vec![];
-        for _index in self.drone_indices.iter() {
+        let mut inputs: Vec<(usize, rlbot::ControllerState)> = vec![];
+        for &index in self.drone_indices.iter() {
             inputs.push(
-                rlbot::ControllerState {
-                    throttle: 1.0,
-                    steer: 1.0,
-                    ..Default::default()
-                }
+                (
+                    index,
+                    rlbot::ControllerState {
+                        throttle: 1.0,
+                        steer: 1.0,
+                        ..Default::default()
+                    }
+                )
             );
         }
         
