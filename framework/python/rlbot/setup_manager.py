@@ -12,7 +12,6 @@ from pathlib import Path
 from typing import List, Optional, Dict
 from urllib.parse import ParseResult as URL
 
-import psutil
 from rlbot.utils.structures import game_data_struct
 
 from rlbot import gateway_util
@@ -25,6 +24,7 @@ from rlbot.botmanager.helper_process_manager import HelperProcessManager
 from rlbot.gateway_util import LaunchOptions, NetworkingRole
 from rlbot.matchconfig.conversions import parse_match_config
 from rlbot.matchconfig.match_config import MatchConfig
+from rlbot.matchconfig.psyonix_config import set_random_psyonix_bot_preset
 from rlbot.matchcomms.server import launch_matchcomms_server
 from rlbot.parsing.agent_config_parser import load_bot_appearance
 from rlbot.parsing.bot_config_bundle import get_bot_config_bundle, BotConfigBundle
@@ -36,6 +36,8 @@ from rlbot.utils.logging_utils import get_logger, DEFAULT_LOGGER
 from rlbot.utils.process_configuration import WrongProcessArgs
 from rlbot.utils.structures.start_match_structures import MAX_PLAYERS
 from rlbot.utils.structures.game_interface import GameInterface
+from rlbot.utils.config_parser import mergeTASystemSettings, cleanUpTASystemSettings
+from rlbot.matchcomms.server import MatchcommsServerThread
 
 if platform.system() == 'Windows':
     import msvcrt
@@ -164,6 +166,7 @@ class SetupManager:
             self.logger.info("Will not start Rocket League because this is configured as a client!")
         # Launch the game if it is not running.
         elif not self.is_rocket_league_running(port):
+            mergeTASystemSettings()
             self.launch_rocket_league(port=port)
 
         try:
@@ -242,6 +245,10 @@ class SetupManager:
         self.names = [bot.name for bot in match_config.player_configs]
         self.teams = [bot.team for bot in match_config.player_configs]
 
+        for player in match_config.player_configs:
+            if player.bot and not player.rlbot_controlled:
+                set_random_psyonix_bot_preset(player)
+
         bundles = [bot_config_overrides[index] if index in bot_config_overrides else
                    get_bot_config_bundle(bot.config_path) if bot.config_path else None
                    for index, bot in enumerate(match_config.player_configs)]
@@ -254,8 +261,7 @@ class SetupManager:
         for index, bot in enumerate(match_config.player_configs):
             self.bot_bundles.append(bundles[index])
             if bot.loadout_config is None and bundles[index]:
-                looks_config = bundles[index].get_looks_config()
-                bot.loadout_config = load_bot_appearance(looks_config, bot.team)
+                bot.loadout_config = bundles[index].generate_loadout_config(index, bot.team)
 
         if match_config.extension_config is not None and match_config.extension_config.python_file_path is not None:
             self.load_extension(match_config.extension_config.python_file_path)
@@ -378,14 +384,12 @@ class SetupManager:
                 self.logger.info(f'Player in slot {i} was sent with spawn id {spawn_id}, will search in the packet.')
                 for n in range(0, packet.num_cars):
                     packet_spawn_id = packet.game_cars[n].spawn_id
-                    self.logger.info(f'Packet index {n} has spawn id {packet_spawn_id}')
                     if spawn_id == packet_spawn_id:
                         self.logger.info(f'Looks good, considering participant index to be {n}')
                         participant_index = n
                         bot_manager_spawn_id = spawn_id
                 if participant_index is None:
                     raise Exception("Unable to determine the bot index!")
-
 
             if participant_index not in self.bot_processes:
                 reload_request = mp.Event()
@@ -422,6 +426,8 @@ class SetupManager:
         time.sleep(2)  # Wait a moment. If we look too soon, we might see a valid packet from previous game.
         self.game_interface.wait_until_valid_packet()
         self.logger.info("Match has started")
+
+        cleanUpTASystemSettings()
 
     def infinite_loop(self):
         instructions = "Press 'r' to reload all agents, or 'q' to exit"

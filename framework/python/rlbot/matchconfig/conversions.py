@@ -25,7 +25,7 @@ def read_match_config_from_file(match_config_path: Path) -> MatchConfig:
 
 
 def parse_match_config(config_parser: ConfigObject, config_location, config_bundle_overrides,
-                         looks_config_overrides) -> MatchConfig:
+                       looks_config_overrides) -> MatchConfig:
 
     match_config = MatchConfig()
     match_config.mutators = MutatorConfig()
@@ -47,9 +47,8 @@ def parse_match_config(config_parser: ConfigObject, config_location, config_bund
 
         config_bundle = config_bundles[i]
 
-        if i not in looks_config_overrides:
-            looks_config_object = config_bundle.get_looks_config()
-        else:
+        looks_config_object = None
+        if i in looks_config_overrides:
             looks_config_object = looks_config_overrides[i]
 
         player_config = _load_bot_config(i, config_bundle, looks_config_object, config_parser, human_index_tracker)
@@ -94,9 +93,10 @@ def get_bot_options(bot_type):
 
     return is_bot, is_rlbot
 
+
 def _load_bot_config(index, config_bundle: BotConfigBundle,
-                    looks_config_object: ConfigObject, overall_config: ConfigObject,
-                    human_index_tracker: IncrementingInteger) -> PlayerConfig:
+                     looks_config_object: ConfigObject, overall_config: ConfigObject,
+                     human_index_tracker: IncrementingInteger) -> PlayerConfig:
     """
     Loads the config data of a single bot
     :param index: This is the bot index (where it appears in game_cars)
@@ -126,7 +126,11 @@ def _load_bot_config(index, config_bundle: BotConfigBundle,
     # Setting up the bots name
     bot_configuration.name = config_bundle.name
 
-    loadout_config = load_bot_appearance(looks_config_object, team_num)
+    if looks_config_object:
+        loadout_config = load_bot_appearance(looks_config_object, team_num)
+    else:
+        loadout_config = config_bundle.generate_loadout_config(index, team_num)
+
     bot_configuration.loadout_config = loadout_config
 
     return bot_configuration
@@ -144,6 +148,8 @@ known_types = {
     LoadoutConfig: '__LoadoutConfig__',
     LoadoutPaintConfig: '__LoadoutPaintConfig__',
 }
+
+
 class ConfigJsonEncoder(json.JSONEncoder):
     def default(self, obj):
         for cls, tag in known_types.items():
@@ -156,6 +162,7 @@ class ConfigJsonEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 # ====== JSON -> MatchConfig ======
+
 
 def as_match_config(json_obj) -> MatchConfig:
     for cls, tag in known_types.items():
