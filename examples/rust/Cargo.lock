@@ -51,7 +51,7 @@ dependencies = [
 name = "example"
 version = "0.1.0"
 dependencies = [
- "rlbot 0.6.0",
+ "rlbot 0.6.1",
 ]
 
 [[package]]
@@ -275,7 +275,7 @@ dependencies = [
 
 [[package]]
 name = "rlbot"
-version = "0.6.0"
+version = "0.6.1"
 dependencies = [
  "flatbuffers 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "libloading 0.5.2 (registry+https://github.com/rust-lang/crates.io-index)",
