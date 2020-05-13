@@ -1,18 +1,18 @@
 # Hivemind
 
-Hivemind bots for [RLBot](rlbot.org).
+Hivemind bots for [RLBot](rlbot.org). 
+
+This repository serves as a collection hivemind template repositories (as submodules) and the [wiki](https://github.com/ViliamVadocz/Hivemind/wiki).
 
 Currently supported languages:
 
 - Python
 - Rust
-
-## Quick test
-
-Clone this repository and run `runner.py`. It should run a match with a Python Hivemind versus a Rust Hivemind. The bots will just spin in circles, but you should see `Running!` and `I am alive! Team: #` in the console.
+- Java
+- Kotlin
 
 ## Help
 
-Please check out the [wiki](https://github.com/ViliamVadocz/Hivemind/wiki)!
+Please check out the [wiki](https://github.com/ViliamVadocz/Hivemind/wiki)! Let me know if something is missing.
 
 If you have further questions ask me on Discord `@Calculated_Will#4544`.
