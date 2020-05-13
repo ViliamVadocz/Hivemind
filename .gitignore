@@ -1,8 +1,5 @@
 # Python
-__pycache__/
-
-# Rust
-target/
+__pycache__
 
 # VisualStudioCode
 .vscode/*
