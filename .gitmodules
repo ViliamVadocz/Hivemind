@@ -1,3 +1,9 @@
 [submodule "RLBotPythonHivemindExample"]
 	path = RLBotPythonHivemindExample
 	url = https://github.com/RLBot/RLBotPythonHivemindExample
+[submodule "RLBotRustHivemindExample"]
+	path = RLBotRustHivemindExample
+	url = https://github.com/ViliamVadocz/RLBotRustHivemindExample
+[submodule "RLBotJavaHivemindTemplate"]
+	path = RLBotJavaHivemindTemplate
+	url = https://github.com/NicEastvillage/RLBotJavaHivemindTemplate
