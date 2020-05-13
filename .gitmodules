@@ -1,0 +1,3 @@
+[submodule "RLBotPythonHivemindExample"]
+	path = RLBotPythonHivemindExample
+	url = https://github.com/RLBot/RLBotPythonHivemindExample
