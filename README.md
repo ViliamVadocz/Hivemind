@@ -15,4 +15,4 @@ Currently supported languages:
 
 Please check out the [wiki](https://github.com/ViliamVadocz/Hivemind/wiki)! Let me know if something is missing.
 
-If you have further questions ask me on Discord `@Calculated_Will#4544`.
+If you have further questions ask me on Discord `@0x57696c6c#3433`.
